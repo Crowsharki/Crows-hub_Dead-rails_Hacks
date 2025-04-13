@@ -10,7 +10,9 @@ execute it in the executor you downloaded
 not done yet
 
 
-note: If there is an problem, I just started programming, sorry and I'm gona fix it.
+note
+--------------
+ If there is an problem, I just started programming, sorry and I'm gona fix it.
 English isn't my main language, but can still say and write stuff, so pls note that
 
 Features
