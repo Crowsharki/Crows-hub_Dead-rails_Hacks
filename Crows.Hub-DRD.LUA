@@ -108,16 +108,7 @@ itemsESPBtn.Visible = false -- Initially hidden
 local playersESPBtn = makeButton("Player ESP", 290, 200)
 playersESPBtn.Visible = false -- Initially hidden
 
--- Toggle ESP Logic
-local function clearESP()
-    for _, tag in ipairs(espTags) do
-        if tag and tag.Parent then
-            tag:Destroy()
-        end
-    end
-    espTags = {}
-end
-
+-- Function to create ESP Tag
 local function createESP(model, labelText)
     if not model:FindFirstChild("Head") then return end
     if model.Head:FindFirstChild("_ESPTag") then return end
@@ -140,32 +131,68 @@ local function createESP(model, labelText)
 end
 
 -- Mobs ESP Logic
+local isMobsESPActive = false
 mobsESPBtn.MouseButton1Click:Connect(function()
-    clearESP()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("Model") and v:FindFirstChild("Head") and not v:FindFirstChildOfClass("Humanoid") then
-            createESP(v, v.Name)
+    isMobsESPActive = not isMobsESPActive
+    if isMobsESPActive then
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v:FindFirstChild("Head") and not v:FindFirstChildOfClass("Humanoid") then
+                createESP(v, v.Name)
+            end
         end
+        mobsESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Change color to indicate active
+    else
+        for _, tag in ipairs(espTags) do
+            if tag and tag.Parent then
+                tag:Destroy()
+            end
+        end
+        espTags = {}
+        mobsESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Change color to indicate inactive
     end
 end)
 
 -- Items ESP Logic
+local isItemsESPActive = false
 itemsESPBtn.MouseButton1Click:Connect(function()
-    clearESP()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("Model") and v:FindFirstChild("Handle") then
-            createESP(v, v.Name)
+    isItemsESPActive = not isItemsESPActive
+    if isItemsESPActive then
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v:FindFirstChild("Handle") then
+                createESP(v, v.Name)
+            end
         end
+        itemsESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Change color to indicate active
+    else
+        for _, tag in ipairs(espTags) do
+            if tag and tag.Parent then
+                tag:Destroy()
+            end
+        end
+        espTags = {}
+        itemsESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Change color to indicate inactive
     end
 end)
 
 -- Player ESP Logic
+local isPlayersESPActive = false
 playersESPBtn.MouseButton1Click:Connect(function()
-    clearESP()
-    for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
-        if v.Character and v.Character:FindFirstChild("Head") then
-            createESP(v.Character, v.Name)
+    isPlayersESPActive = not isPlayersESPActive
+    if isPlayersESPActive then
+        for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
+            if v.Character and v.Character:FindFirstChild("Head") then
+                createESP(v.Character, v.Name)
+            end
         end
+        playersESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Change color to indicate active
+    else
+        for _, tag in ipairs(espTags) do
+            if tag and tag.Parent then
+                tag:Destroy()
+            end
+        end
+        espTags = {}
+        playersESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Change color to indicate inactive
     end
 end)
 
@@ -224,14 +251,10 @@ end)
 
 -- ESP Button click: Toggle ESP Group visibility and show ESP Buttons
 espButton.MouseButton1Click:Connect(function()
-    -- Hide Local group if visible
-    if localGroup.Visible then
-        localGroup.Visible = false
-    end
-    espGroup.Visible = true  -- Show ESP group
-    mobsESPBtn.Visible = true
-    itemsESPBtn.Visible = true
-    playersESPBtn.Visible = true
+    espGroup.Visible = not espGroup.Visible  -- Toggle ESP group visibility
+    mobsESPBtn.Visible = espGroup.Visible
+    itemsESPBtn.Visible = espGroup.Visible
+    playersESPBtn.Visible = espGroup.Visible
 end)
 
 -- Close button logic
