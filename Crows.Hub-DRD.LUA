@@ -22,7 +22,7 @@ local corner = Instance.new("UICorner", frame)
 corner.CornerRadius = UDim.new(0, 10)
 
 -- Title Label (Optional)
-local titleLabel = Instance.new("TextLabel", frame)
+local titleLabel = Instance.new("SetSpeed", frame)
 titleLabel.Size = UDim2.new(0, 280, 0, 40)
 titleLabel.Position = UDim2.new(0, 10, 0, 10)
 titleLabel.Text = "Speed & Jump Hub"
