@@ -11,6 +11,7 @@ execute it in the executor you downloaded
 
 not done yet
 
+no key
 
 note
 --------------
@@ -21,7 +22,7 @@ I DID NOT test it yet, my PC is down so coded it all in phone which was a pain, 
 
 Features
 -------------------
-Set your speed without getting caught with the Anti-Cheat system (I just made the code, not done yet)
+noclip
+esp
 
-Set your bonds (will test)
-
+More to Come!!
