@@ -38,7 +38,7 @@ local function label(txt, posY)
 end
 
 -- Title of the GUI
-label("🪶 Crows Hub", 5)
+label("Crows Hub", 5)
 
 -- Local Button (left of title)
 local localButton = Instance.new("TextButton", frame)
