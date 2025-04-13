@@ -1,139 +1,124 @@
-local player = game.Players.LocalPlayer
+-- Crows Hub - Speed & Jump GUI (Executor Friendly)
+--i just updated the GUI not working, its working now with a close button
+
+local player = game:GetService("Players").LocalPlayer
 local RunService = game:GetService("RunService")
-local replicatedStorage = game:GetService("ReplicatedStorage")
 
--- Get the PlayerBonds value from ReplicatedStorage
-local playerBonds = replicatedStorage:WaitForChild("PlayerBonds")
+-- Destroy old GUI if it exists
+local guiName = "CrowsHubUI"
+local existing = player:FindFirstChild("PlayerGui"):FindFirstChild(guiName)
+if existing then existing:Destroy() end
 
--- Create the UI
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "Crows UI"
+-- Create GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = guiName
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- UI Frame
+-- Main Frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.5, -100)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)  -- Dark background color
-frame.BackgroundTransparency = 0.2
+frame.Size = UDim2.new(0, 340, 0, 240)
+frame.Position = UDim2.new(0.5, -170, 0.5, -120)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
--- Add UICorner for rounded corners to the Frame
-local corner = Instance.new("UICorner", frame)
-corner.CornerRadius = UDim.new(0, 10)
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -50, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 5)
+title.Text = "🪶 Crows Hub"
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
 
--- Title Label (Optional)
-local titleLabel = Instance.new("SetSpeed", frame)
-titleLabel.Size = UDim2.new(0, 280, 0, 40)
-titleLabel.Position = UDim2.new(0, 10, 0, 10)
-titleLabel.Text = "Speed & Jump Hub"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.BackgroundTransparency = 1
-titleLabel.TextScaled = true
-titleLabel.TextStrokeTransparency = 0.8
+-- Close Button
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 30, 0, 30)
+close.Position = UDim2.new(1, -35, 0, 5)
+close.Text = "X"
+close.TextColor3 = Color3.fromRGB(255, 80, 80)
+close.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+close.Font = Enum.Font.GothamBold
+close.TextScaled = true
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
 
--- Speed Input (TextBox)
-local speedInput = Instance.new("TextBox", frame)
-speedInput.Size = UDim2.new(0, 150, 0, 40)
-speedInput.Position = UDim2.new(0, 10, 0, 60)
-speedInput.PlaceholderText = "Set Speed"
-speedInput.Text = ""
-speedInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-speedInput.BackgroundTransparency = 0.3
-speedInput.BorderSizePixel = 0
+-- Speed Input
+local speedBox = Instance.new("TextBox", frame)
+speedBox.Size = UDim2.new(0, 140, 0, 40)
+speedBox.Position = UDim2.new(0, 20, 0, 60)
+speedBox.PlaceholderText = "Enter Speed"
+speedBox.Text = ""
+speedBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+speedBox.TextColor3 = Color3.new(1, 1, 1)
+speedBox.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+speedBox.Font = Enum.Font.Gotham
+speedBox.TextScaled = true
+Instance.new("UICorner", speedBox).CornerRadius = UDim.new(0, 8)
 
--- Add UICorner to speed input for rounded corners
-local speedInputCorner = Instance.new("UICorner", speedInput)
-speedInputCorner.CornerRadius = UDim.new(0, 10)
-
--- Bonds (Currency) Input (TextBox)
-local bondInput = Instance.new("TextBox", frame)
-bondInput.Size = UDim2.new(0, 150, 0, 40)
-bondInput.Position = UDim2.new(0, 10, 0, 110)
-bondInput.PlaceholderText = "Set Bonds"
-bondInput.Text = ""
-bondInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-bondInput.BackgroundTransparency = 0.3
-bondInput.BorderSizePixel = 0
-
--- Add UICorner to bond input for rounded corners
-local bondInputCorner = Instance.new("UICorner", bondInput)
-bondInputCorner.CornerRadius = UDim.new(0, 10)
+-- Jump Power Input
+local jumpBox = Instance.new("TextBox", frame)
+jumpBox.Size = UDim2.new(0, 140, 0, 40)
+jumpBox.Position = UDim2.new(0, 20, 0, 120)
+jumpBox.PlaceholderText = "Enter Jump Power"
+jumpBox.Text = ""
+jumpBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+jumpBox.TextColor3 = Color3.new(1, 1, 1)
+jumpBox.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+jumpBox.Font = Enum.Font.Gotham
+jumpBox.TextScaled = true
+Instance.new("UICorner", jumpBox).CornerRadius = UDim.new(0, 8)
 
 -- Apply Button
-local applyButton = Instance.new("TextButton", frame)
-applyButton.Size = UDim2.new(0, 280, 0, 40)
-applyButton.Position = UDim2.new(0, 10, 0, 160)
-applyButton.Text = "Apply"
-applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 127)  -- Green background
-applyButton.BackgroundTransparency = 0.2
-applyButton.BorderSizePixel = 0
+local apply = Instance.new("TextButton", frame)
+apply.Size = UDim2.new(0, 280, 0, 40)
+apply.Position = UDim2.new(0, 30, 0, 180)
+apply.Text = "✅ Apply Settings"
+apply.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+apply.TextColor3 = Color3.new(1, 1, 1)
+apply.Font = Enum.Font.GothamBold
+apply.TextScaled = true
+Instance.new("UICorner", apply).CornerRadius = UDim.new(0, 10)
 
--- Add UICorner to apply button for rounded corners
-local applyButtonCorner = Instance.new("UICorner", applyButton)
-applyButtonCorner.CornerRadius = UDim.new(0, 10)
+-- Vars
+local desiredSpeed = nil
+local desiredJump = nil
+local enforceConnection = nil
 
--- Speed logic using BodyVelocity
-local speed = 0
-local bodyVel = nil
+-- Apply logic
+apply.MouseButton1Click:Connect(function()
+	local spd = tonumber(speedBox.Text)
+	local jmp = tonumber(jumpBox.Text)
 
-applyButton.MouseButton1Click:Connect(function()
-    -- Handle invalid input gracefully
-    speed = tonumber(speedInput.Text)
-    local bond = tonumber(bondInput.Text)
-    
-    -- Validate speed input
-    if not speed or speed <= 0 then
-        warn("Invalid speed input!")
-        speedInput.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Change text color to red if invalid
-        return
-    end
-    
-    -- Validate bond input
-    if not bond or bond <= 0 then
-        warn("Invalid bond input!")
-        bondInput.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Change text color to red if invalid
-        return
-    end
-    
-    -- Reset text color on valid input
-    speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    bondInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    
-    -- Update bonds in ReplicatedStorage
-    playerBonds.Value = bond  -- Update the bond currency in ReplicatedStorage
-    
-    -- Apply jump power changes
-    local char = player.Character or player.CharacterAdded:Wait()
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    
-    if humanoid then
-        humanoid.JumpPower = bond  -- Set the jump power to bond value (for this case, assuming bond also sets JumpPower)
-    end
-
-    if speed and hrp then
-        -- Only create BodyVelocity if it doesn't exist already
-        if not bodyVel then
-            bodyVel = Instance.new("BodyVelocity")
-            bodyVel.MaxForce = Vector3.new(1, 0, 1) * math.huge
-            bodyVel.P = 1250
-            bodyVel.Parent = hrp
-        end
-    end
+	if spd and spd > 0 then desiredSpeed = spd end
+	if jmp and jmp > 0 then desiredJump = jmp end
 end)
 
--- Cleanup the BodyVelocity on character reset or when removed
-player.CharacterAdded:Connect(function()
-    if bodyVel then
-        bodyVel:Destroy()
-        bodyVel = nil
-    end
+-- Enforce loop to prevent resets
+if enforceConnection then enforceConnection:Disconnect() end
+enforceConnection = RunService.RenderStepped:Connect(function()
+	local char = player.Character
+	if char then
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			if desiredSpeed then hum.WalkSpeed = desiredSpeed end
+			if desiredJump then hum.JumpPower = desiredJump end
+		end
+	end
 end)
 
-RunService.RenderStepped:Connect(function()
-    if bodyVel and speed and player.Character then
-        local moveDir = player.Character.Humanoid.MoveDirection
-        bodyVel.Velocity = moveDir * speed
-    end
+-- Reapply on respawn
+player.CharacterAdded:Connect(function(char)
+	wait(1)
+	local hum = char:WaitForChild("Humanoid")
+	if desiredSpeed then hum.WalkSpeed = desiredSpeed end
+	if desiredJump then hum.JumpPower = desiredJump end
+end)
+
+-- Close the hub
+close.MouseButton1Click:Connect(function()
+	if enforceConnection then enforceConnection:Disconnect() end
+	gui:Destroy()
 end)
