@@ -7,7 +7,7 @@ local playerBonds = replicatedStorage:WaitForChild("PlayerBonds")
 
 -- Create the UI
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "Crows UI"  -- Set UI name
+gui.Name = "Crows UI"
 
 -- UI Frame
 local frame = Instance.new("Frame", gui)
