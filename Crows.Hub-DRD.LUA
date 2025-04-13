@@ -1,21 +1,26 @@
 -- Crows Hub - Speed & Jump GUI (Executor Friendly)
---i just updated the GUI not working, its working now with a close button, based on tbao gui
+--i just updated the GUI not working, its working now with a close button, based on tbao hub, 
+--added ESP and u can drag it now
 
+-- Variables
 local p = game:GetService("Players").LocalPlayer
 local rs = game:GetService("RunService")
 local guiName = "CrowsHubUI"
+local espTags = {}
+
+-- Destroy any existing GUI
 local existing = p:FindFirstChild("PlayerGui"):FindFirstChild(guiName)
 if existing then existing:Destroy() end
 
--- Create the GUI and set it up correctly
+-- Create the GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = guiName
 gui.ResetOnSpawn = false
 gui.Parent = p:WaitForChild("PlayerGui")
 
--- Create the frame (smaller size)
+-- Create the frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 640, 0, 480)  -- Smaller size for the GUI
+frame.Size = UDim2.new(0, 640, 0, 480)
 frame.Position = UDim2.new(0.5, -320, 0.5, -240)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
@@ -37,87 +42,148 @@ local function label(txt, posY)
     return l
 end
 
--- Title of the GUI
-label("Crows Hub", 5)
+label("Crows Hub", 5) -- Hub Name
 
--- Local Button (left of title)
-local localButton = Instance.new("TextButton", frame)
-localButton.Size = UDim2.new(0, 120, 0, 40)
-localButton.Position = UDim2.new(0, 30, 0, 45)  -- Position below title, left
-localButton.Text = "Local"
-localButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-localButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-localButton.Font = Enum.Font.GothamBold
-localButton.TextScaled = true
-Instance.new("UICorner", localButton).CornerRadius = UDim.new(0, 8)
+-- Create buttons
+local function makeButton(name, xPos, yPos)
+    local button = Instance.new("TextButton", frame)
+    button.Size = UDim2.new(0, 120, 0, 40)
+    button.Position = UDim2.new(0, xPos, 0, yPos)
+    button.Text = name
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.GothamBold
+    button.TextScaled = true
+    Instance.new("UICorner", button).CornerRadius = UDim.new(0, 8)
+    return button
+end
 
--- ESP Button (next to Local button)
-local espButton = Instance.new("TextButton", frame)
-espButton.Size = UDim2.new(0, 120, 0, 40)
-espButton.Position = UDim2.new(0, 160, 0, 45)  -- Position next to Local
-espButton.Text = "ESP"
-espButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-espButton.Font = Enum.Font.GothamBold
-espButton.TextScaled = true
-Instance.new("UICorner", espButton).CornerRadius = UDim.new(0, 8)
+-- Create the buttons
+local localButton = makeButton("Local", 30, 45) -- Left button
+local espButton = makeButton("ESP", 160, 45)   -- Right button
 
--- Local Group (Speed Button and other elements)
+-- Local Group (Speed and Jump)
 local localGroup = Instance.new("Frame", frame)
-localGroup.Size = UDim2.new(0, 640, 0, 60)  -- Adjusted for the speed section
-localGroup.Position = UDim2.new(0, 0, 0, 170)  -- Position below Local and ESP buttons
-localGroup.Visible = false  -- Initially hidden
-localGroup.BackgroundTransparency = 1  -- Remove any unwanted background color
+localGroup.Size = UDim2.new(0, 640, 0, 60)
+localGroup.Position = UDim2.new(0, 0, 0, 170)
+localGroup.Visible = false
+localGroup.BackgroundTransparency = 1
 
 local speedBox = Instance.new("TextBox", localGroup)
 speedBox.Size = UDim2.new(0, 420, 0, 60)
 speedBox.Position = UDim2.new(0, 30, 0, 0)
 speedBox.PlaceholderText = "Enter Speed"
 speedBox.Text = ""
-speedBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)  -- Dark gray background for the input box
+speedBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 speedBox.TextColor3 = Color3.new(1, 1, 1)
 speedBox.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
 speedBox.Font = Enum.Font.Gotham
 speedBox.TextScaled = true
 Instance.new("UICorner", speedBox).CornerRadius = UDim.new(0, 8)
 
-speedBox.BackgroundTransparency = 0.2  -- Make the background a bit transparent (adjust as needed)
-speedBox.BorderSizePixel = 0  -- Remove the border
-
 local toggleButton = Instance.new("TextButton", localGroup)
 toggleButton.Size = UDim2.new(0, 120, 0, 60)
 toggleButton.Position = UDim2.new(0, 460, 0, 0)
 toggleButton.Text = "Inactive"
-toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red initially (inactive)
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.GothamBold
 toggleButton.TextScaled = true
 Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 8)
 
--- ESP Group (just a placeholder for the ESP section)
+-- ESP Group (Mobs, Items, Players ESP)
 local espGroup = Instance.new("Frame", frame)
-espGroup.Size = UDim2.new(0, 640, 0, 60)  -- Placeholder size for ESP group
-espGroup.Position = UDim2.new(0, 0, 0, 170)  -- Position below Local and ESP buttons
-espGroup.Visible = false  -- Initially hidden
-espGroup.BackgroundTransparency = 1  -- Make the background of the ESP group transparent
+espGroup.Size = UDim2.new(0, 640, 0, 60)
+espGroup.Position = UDim2.new(0, 0, 0, 170)
+espGroup.Visible = false
+espGroup.BackgroundTransparency = 1
+
+-- Mobs ESP Button
+local mobsESPBtn = makeButton("Mobs ESP", 30, 200)
+mobsESPBtn.Visible = false -- Initially hidden
+-- Items ESP Button
+local itemsESPBtn = makeButton("Items ESP", 160, 200)
+itemsESPBtn.Visible = false -- Initially hidden
+-- Player ESP Button
+local playersESPBtn = makeButton("Player ESP", 290, 200)
+playersESPBtn.Visible = false -- Initially hidden
+
+-- Toggle ESP Logic
+local function clearESP()
+    for _, tag in ipairs(espTags) do
+        if tag and tag.Parent then
+            tag:Destroy()
+        end
+    end
+    espTags = {}
+end
+
+local function createESP(model, labelText)
+    if not model:FindFirstChild("Head") then return end
+    if model.Head:FindFirstChild("_ESPTag") then return end
+
+    local tag = Instance.new("BillboardGui", model.Head)
+    tag.Name = "_ESPTag"
+    tag.AlwaysOnTop = true
+    tag.Size = UDim2.new(0, 100, 0, 40)
+    tag.StudsOffset = Vector3.new(0, 2, 0)
+
+    local text = Instance.new("TextLabel", tag)
+    text.Size = UDim2.new(1, 0, 1, 0)
+    text.BackgroundTransparency = 1
+    text.TextColor3 = Color3.new(1, 1, 1)
+    text.Font = Enum.Font.GothamBold
+    text.TextScaled = true
+    text.Text = labelText
+
+    table.insert(espTags, tag)
+end
+
+-- Mobs ESP Logic
+mobsESPBtn.MouseButton1Click:Connect(function()
+    clearESP()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Head") and not v:FindFirstChildOfClass("Humanoid") then
+            createESP(v, v.Name)
+        end
+    end
+end)
+
+-- Items ESP Logic
+itemsESPBtn.MouseButton1Click:Connect(function()
+    clearESP()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Handle") then
+            createESP(v, v.Name)
+        end
+    end
+end)
+
+-- Player ESP Logic
+playersESPBtn.MouseButton1Click:Connect(function()
+    clearESP()
+    for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
+        if v.Character and v.Character:FindFirstChild("Head") then
+            createESP(v.Character, v.Name)
+        end
+    end
+end)
 
 -- Toggle button logic for Speed
 local moveSpeed = nil
-local originalSpeed = 16  -- Default walk speed of Roblox characters
+local originalSpeed = 16
 
 toggleButton.MouseButton1Click:Connect(function()
     if toggleButton.BackgroundColor3 == Color3.fromRGB(255, 0, 0) then
-        -- If the button is red (inactive), apply the new speed
         local speedValue = tonumber(speedBox.Text)
         if speedValue and speedValue > 0 then
             moveSpeed = speedValue
-            toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Turn green
+            toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
             toggleButton.Text = "Active"
         end
     else
-        -- If the button is green (active), reset to original speed
         moveSpeed = originalSpeed
-        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Turn red
+        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
         toggleButton.Text = "Inactive"
     end
 end)
@@ -128,9 +194,7 @@ rs.RenderStepped:Connect(function()
     local char = p.Character
     if not char then return end
     local hum = char:FindFirstChildWhichIsA("Humanoid")
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not hrp then return end
-    if moveSpeed then
+    if hum and moveSpeed then
         hum.WalkSpeed = moveSpeed
     end
 end)
@@ -142,28 +206,32 @@ p.CharacterAdded:Connect(function(char)
     if moveSpeed then
         hum.WalkSpeed = moveSpeed
     else
-        hum.WalkSpeed = originalSpeed  -- Reset to original speed if no custom speed is set
+        hum.WalkSpeed = originalSpeed
     end
 end)
 
--- Local Button click: Toggle Local Group visibility
+-- Local Button click: Toggle Local Group visibility and hide ESP group if it’s visible
 localButton.MouseButton1Click:Connect(function()
-    if localGroup.Visible then
-        localGroup.Visible = false  -- If it's visible, hide it
-    else
-        localGroup.Visible = true   -- If it's hidden, show it
-        espGroup.Visible = false    -- Hide the ESP group if Local is visible
+    -- Hide ESP group if visible
+    if espGroup.Visible then
+        espGroup.Visible = false
+        mobsESPBtn.Visible = false
+        itemsESPBtn.Visible = false
+        playersESPBtn.Visible = false
     end
+    localGroup.Visible = true  -- Show Local group
 end)
 
--- ESP Button click: Toggle ESP Group visibility
+-- ESP Button click: Toggle ESP Group visibility and show ESP Buttons
 espButton.MouseButton1Click:Connect(function()
-    if espGroup.Visible then
-        espGroup.Visible = false  -- If it's visible, hide it
-    else
-        espGroup.Visible = true   -- If it's hidden, show it
-        localGroup.Visible = false  -- Hide the Local group if ESP is visible
+    -- Hide Local group if visible
+    if localGroup.Visible then
+        localGroup.Visible = false
     end
+    espGroup.Visible = true  -- Show ESP group
+    mobsESPBtn.Visible = true
+    itemsESPBtn.Visible = true
+    playersESPBtn.Visible = true
 end)
 
 -- Close button logic
@@ -179,5 +247,5 @@ Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
 
 -- Close button logic
 close.MouseButton1Click:Connect(function()
-    gui:Destroy()  -- Completely destroy the GUI
+    gui:Destroy()  -- Destroy the GUI when the close button is clicked
 end)
