@@ -2,14 +2,17 @@
 --i just updated the GUI not working, its working now with a close button, based on tbao hub, 
 --added ESP and u can drag it now
 
--- Crows Hub - Noclip & Money Setter GUI (Executor Friendly)
+-- Existing Script for Crows Hub
 
--- Variables
+-- Variables and GUI setup (this part remains the same as in the original script)
+
 local p = game:GetService("Players").LocalPlayer
 local rs = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
 local guiName = "CrowsHubUI"
 local espTags = {}
 local noclipActive = false
+local fullbrightActive = false
 local humanoid = nil
 
 -- Destroy any existing GUI
@@ -48,10 +51,10 @@ end
 
 label("Crows Hub", 5)
 
--- Button Creator (Updated to use smaller height for buttons)
+-- Button Creator
 local function makeButton(name, xPos, yPos, height)
     local button = Instance.new("TextButton", frame)
-    button.Size = UDim2.new(0, 120, 0, height)  -- Adjusted height
+    button.Size = UDim2.new(0, 120, 0, height)  
     button.Position = UDim2.new(0, xPos, 0, yPos)
     button.Text = name
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -63,20 +66,20 @@ local function makeButton(name, xPos, yPos, height)
 end
 
 -- Tabs
-local localButton = makeButton("Local", 30, 45, 30)  -- Adjusted height here
-local espButton = makeButton("ESP", 160, 45, 30)   -- Adjusted height here
+local localButton = makeButton("Local", 30, 45, 30) 
+local espButton = makeButton("ESP", 160, 45, 30)   
 
 -- Local Group (Where all local functions reside)
 local localGroup = Instance.new("Frame", frame)
-localGroup.Size = UDim2.new(0, 640, 0, 200)  -- Same height
+localGroup.Size = UDim2.new(0, 640, 0, 200) 
 localGroup.Position = UDim2.new(0, 0, 0, 170)
-localGroup.Visible = false
+localGroup.Visible = true
 localGroup.BackgroundTransparency = 1
 
--- Noclip Button (Updated to use smaller height)
+-- Noclip Button
 local noclipBtn = Instance.new("TextButton", localGroup)
-noclipBtn.Size = UDim2.new(0, 580, 0, 40)  -- Adjusted height
-noclipBtn.Position = UDim2.new(0, 30, 0, 0)  -- Move up a little
+noclipBtn.Size = UDim2.new(0, 580, 0, 40)  
+noclipBtn.Position = UDim2.new(0, 30, 0, 0)
 noclipBtn.Text = "Noclip: OFF"
 noclipBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 noclipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -84,66 +87,42 @@ noclipBtn.Font = Enum.Font.GothamBold
 noclipBtn.TextScaled = true
 Instance.new("UICorner", noclipBtn).CornerRadius = UDim.new(0, 8)
 
--- Money Setter (Placed below the Noclip button)
-local moneySetterGroup = Instance.new("Frame", localGroup)
-moneySetterGroup.Size = UDim2.new(0, 640, 0, 120)  -- Adjusted height
-moneySetterGroup.Position = UDim2.new(0, 0, 0, 50)  -- Placed below Noclip button
-moneySetterGroup.BackgroundTransparency = 1
-
--- Money TextBox (for entering the amount)
-local moneyTextBox = Instance.new("TextBox", moneySetterGroup)
-moneyTextBox.Size = UDim2.new(0, 580, 0, 40)  -- Adjusted height
-moneyTextBox.Position = UDim2.new(0, 30, 0, 0)
-moneyTextBox.PlaceholderText = "Enter the amount"
-moneyTextBox.Text = ""
-moneyTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-moneyTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-moneyTextBox.Font = Enum.Font.GothamBold
-moneyTextBox.TextScaled = true
-Instance.new("UICorner", moneyTextBox).CornerRadius = UDim.new(0, 8)
-
--- Set Money Button (Updated to use smaller height)
-local setMoneyBtn = Instance.new("TextButton", moneySetterGroup)
-setMoneyBtn.Size = UDim2.new(0, 580, 0, 40)  -- Adjusted height
-setMoneyBtn.Position = UDim2.new(0, 30, 0, 50)
-setMoneyBtn.Text = "Set Money"
-setMoneyBtn.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
-setMoneyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-setMoneyBtn.Font = Enum.Font.GothamBold
-setMoneyBtn.TextScaled = true
-Instance.new("UICorner", setMoneyBtn).CornerRadius = UDim.new(0, 8)
-
--- Money Setter Logic (Setting Money)
-setMoneyBtn.MouseButton1Click:Connect(function()
-    local leaderstats = p:FindFirstChild("leaderstats")
-    if leaderstats then
-        local money = leaderstats:FindFirstChild("Money")
-        if money then
-            -- Attempt to convert the text input into a number
-            local moneyAmount = tonumber(moneyTextBox.Text)
-            if moneyAmount then
-                money.Value = moneyAmount  -- Set money to the entered value
-            else
-                print("Invalid amount entered.")  -- If it's not a valid number, print a message
-            end
-        end
-    end
-end)
+-- Fullbright Button
+local fullbrightBtn = Instance.new("TextButton", localGroup)
+fullbrightBtn.Size = UDim2.new(0, 580, 0, 40)
+fullbrightBtn.Position = UDim2.new(0, 30, 0, 50)
+fullbrightBtn.Text = "Fullbright: OFF"
+fullbrightBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+fullbrightBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+fullbrightBtn.Font = Enum.Font.GothamBold
+fullbrightBtn.TextScaled = true
+Instance.new("UICorner", fullbrightBtn).CornerRadius = UDim.new(0, 8)
 
 -- ESP Group
 local espGroup = Instance.new("Frame", frame)
-espGroup.Size = UDim2.new(0, 640, 0, 60)
+espGroup.Size = UDim2.new(0, 640, 0, 200)
 espGroup.Position = UDim2.new(0, 0, 0, 170)
 espGroup.Visible = false
 espGroup.BackgroundTransparency = 1
 
 -- ESP Buttons
-local mobsESPBtn = makeButton("Mobs ESP", 30, 200, 30)  -- Adjusted height here
-local itemsESPBtn = makeButton("Items ESP", 160, 200, 30)  -- Adjusted height here
-local playersESPBtn = makeButton("Player ESP", 290, 200, 30)  -- Adjusted height here
-mobsESPBtn.Visible, itemsESPBtn.Visible, playersESPBtn.Visible = false, false, false
+local mobsESPBtn = makeButton("Mobs ESP", 30, 200, 30)  
+local itemsESPBtn = makeButton("Items ESP", 160, 200, 30)  
+local playersESPBtn = makeButton("Player ESP", 290, 200, 30)  
 
--- ESP Logic
+-- Close Button
+local closeButton = Instance.new("TextButton", frame)
+closeButton.Size = UDim2.new(0, 40, 0, 40)
+closeButton.Position = UDim2.new(0, 590, 0, 5)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextScaled = true
+Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0, 8)
+
+-- ESP Logic for Mobs and Items (from external script)
+
 local function createESP(model, labelText)
     if not model:FindFirstChild("Head") then return end
     if model.Head:FindFirstChild("_ESPTag") then return end
@@ -172,55 +151,40 @@ local function clearESP()
     espTags = {}
 end
 
--- ESP Button Logic
-local isMobsESPActive, isItemsESPActive, isPlayersESPActive = false, false, false
-
+-- Mobs ESP
 mobsESPBtn.MouseButton1Click:Connect(function()
-    isMobsESPActive = not isMobsESPActive
     clearESP()
-    if isMobsESPActive then
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("Model") and v:FindFirstChild("Head") and not v:FindFirstChildOfClass("Humanoid") then
-                createESP(v, v.Name)
-            end
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Head") and not v:FindFirstChildOfClass("Humanoid") then
+            createESP(v, v.Name)
         end
-        mobsESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    else
-        mobsESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end
+    mobsESPBtn.BackgroundColor3 = mobsESPBtn.BackgroundColor3 == Color3.fromRGB(0, 255, 0) and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(0, 255, 0)
 end)
 
+-- Items ESP
 itemsESPBtn.MouseButton1Click:Connect(function()
-    isItemsESPActive = not isItemsESPActive
     clearESP()
-    if isItemsESPActive then
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("Model") and v:FindFirstChild("Handle") then
-                createESP(v, v.Name)
-            end
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Handle") then
+            createESP(v, v.Name)
         end
-        itemsESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    else
-        itemsESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end
+    itemsESPBtn.BackgroundColor3 = itemsESPBtn.BackgroundColor3 == Color3.fromRGB(0, 255, 0) and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(0, 255, 0)
 end)
 
+-- Player ESP (based on the original external script logic)
 playersESPBtn.MouseButton1Click:Connect(function()
-    isPlayersESPActive = not isPlayersESPActive
     clearESP()
-    if isPlayersESPActive then
-        for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
-            if v.Character and v.Character:FindFirstChild("Head") then
-                createESP(v.Character, v.Name)
-            end
+    for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
+        if v.Character and v.Character:FindFirstChild("Head") then
+            createESP(v.Character, v.Name)
         end
-        playersESPBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    else
-        playersESPBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end
+    playersESPBtn.BackgroundColor3 = playersESPBtn.BackgroundColor3 == Color3.fromRGB(0, 255, 0) and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(0, 255, 0)
 end)
 
--- Noclip Logic
+-- Noclip Logic with Landing
 local function toggleNoclip(state)
     noclipActive = state
     noclipBtn.Text = "Noclip: " .. (state and "ON" or "OFF")
@@ -237,49 +201,70 @@ rs.Stepped:Connect(function()
     end
 end)
 
--- Auto-disable noclip when jumping
-rs.RenderStepped:Connect(function()
-    if noclipActive and p.Character and p.Character:FindFirstChildOfClass("Humanoid") then
-        local hum = p.Character:FindFirstChildOfClass("Humanoid")
-        if hum:GetState() == Enum.HumanoidStateType.Jumping then
-            toggleNoclip(false)
-        end
-    end
-end)
+-- Fullbright Logic
+local function toggleFullbright(state)
+    fullbrightActive = state
+    fullbrightBtn.Text = "Fullbright: " .. (state and "ON" or "OFF")
+    fullbrightBtn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
 
+    if state then
+        game.Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        game.Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+    else
+        game.Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+        game.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+    end
+end
+
+-- Button logic
 noclipBtn.MouseButton1Click:Connect(function()
     toggleNoclip(not noclipActive)
 end)
 
--- Tab Buttons
+fullbrightBtn.MouseButton1Click:Connect(function()
+    toggleFullbright(not fullbrightActive)
+end)
+
+-- Close Button Logic
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- Tab switching logic
 localButton.MouseButton1Click:Connect(function()
+    -- Show Local Tab and hide ESP Tab
+    localGroup.Visible = true
     espGroup.Visible = false
-    mobsESPBtn.Visible = false
-    itemsESPBtn.Visible = false
-    playersESPBtn.Visible = false
-    localGroup.Visible = not localGroup.Visible
 end)
 
 espButton.MouseButton1Click:Connect(function()
+    -- Show ESP Tab and hide Local Tab
+    espGroup.Visible = true
     localGroup.Visible = false
-    local show = not espGroup.Visible
-    espGroup.Visible = show
-    mobsESPBtn.Visible = show
-    itemsESPBtn.Visible = show
-    playersESPBtn.Visible = show
 end)
 
--- Close Button
-local close = Instance.new("TextButton", frame)
-close.Size = UDim2.new(0, 60, 0, 60)
-close.Position = UDim2.new(1, -70, 0, 5)
-close.Text = "X"
-close.TextColor3 = Color3.fromRGB(255, 80, 80)
-close.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-close.Font = Enum.Font.GothamBold
-close.TextScaled = true
-Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
+-- Make GUI draggable
+local dragging = false
+local dragStart = Vector3.zero
+local startPos = frame.Position
 
-close.MouseButton1Click:Connect(function()
-    gui:Destroy()
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
 end)
