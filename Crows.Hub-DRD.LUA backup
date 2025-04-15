@@ -2,7 +2,7 @@
 --i just updated the GUI not working, its working now with a close button, based on tbao hub, 
 --added ESP and u can drag it now
 
--- Crows Hub - Noclip & ESP GUI (Executor Friendly)
+-- Crows Hub - Noclip & Money Setter GUI (Executor Friendly)
 
 -- Variables
 local p = game:GetService("Players").LocalPlayer
@@ -83,6 +83,52 @@ noclipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 noclipBtn.Font = Enum.Font.GothamBold
 noclipBtn.TextScaled = true
 Instance.new("UICorner", noclipBtn).CornerRadius = UDim.new(0, 8)
+
+-- Money Setter (Placed below the Noclip button)
+local moneySetterGroup = Instance.new("Frame", localGroup)
+moneySetterGroup.Size = UDim2.new(0, 640, 0, 120)  -- Adjusted height
+moneySetterGroup.Position = UDim2.new(0, 0, 0, 50)  -- Placed below Noclip button
+moneySetterGroup.BackgroundTransparency = 1
+
+-- Money TextBox (for entering the amount)
+local moneyTextBox = Instance.new("TextBox", moneySetterGroup)
+moneyTextBox.Size = UDim2.new(0, 580, 0, 40)  -- Adjusted height
+moneyTextBox.Position = UDim2.new(0, 30, 0, 0)
+moneyTextBox.PlaceholderText = "Enter the amount"
+moneyTextBox.Text = ""
+moneyTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+moneyTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+moneyTextBox.Font = Enum.Font.GothamBold
+moneyTextBox.TextScaled = true
+Instance.new("UICorner", moneyTextBox).CornerRadius = UDim.new(0, 8)
+
+-- Set Money Button (Updated to use smaller height)
+local setMoneyBtn = Instance.new("TextButton", moneySetterGroup)
+setMoneyBtn.Size = UDim2.new(0, 580, 0, 40)  -- Adjusted height
+setMoneyBtn.Position = UDim2.new(0, 30, 0, 50)
+setMoneyBtn.Text = "Set Money"
+setMoneyBtn.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+setMoneyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+setMoneyBtn.Font = Enum.Font.GothamBold
+setMoneyBtn.TextScaled = true
+Instance.new("UICorner", setMoneyBtn).CornerRadius = UDim.new(0, 8)
+
+-- Money Setter Logic (Setting Money)
+setMoneyBtn.MouseButton1Click:Connect(function()
+    local leaderstats = p:FindFirstChild("leaderstats")
+    if leaderstats then
+        local money = leaderstats:FindFirstChild("Money")
+        if money then
+            -- Attempt to convert the text input into a number
+            local moneyAmount = tonumber(moneyTextBox.Text)
+            if moneyAmount then
+                money.Value = moneyAmount  -- Set money to the entered value
+            else
+                print("Invalid amount entered.")  -- If it's not a valid number, print a message
+            end
+        end
+    end
+end)
 
 -- ESP Group
 local espGroup = Instance.new("Frame", frame)
