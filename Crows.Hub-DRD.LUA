@@ -1,11 +1,6 @@
 -- Crows Hub - Speed & Jump GUI (Executor Friendly)
---i just updated the GUI not working, its working now with a close button, based on tbao hub, 
---added ESP and u can drag it now
 
--- Existing Script for Crows Hub
-
--- Variables and GUI setup (this part remains the same as in the original script)
-
+-- Variables and GUI setup
 local p = game:GetService("Players").LocalPlayer
 local rs = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
@@ -13,7 +8,6 @@ local guiName = "CrowsHubUI"
 local espTags = {}
 local noclipActive = false
 local fullbrightActive = false
-local humanoid = nil
 
 -- Destroy any existing GUI
 local existing = p:FindFirstChild("PlayerGui"):FindFirstChild(guiName)
@@ -73,7 +67,7 @@ local espButton = makeButton("ESP", 160, 45, 30)
 local localGroup = Instance.new("Frame", frame)
 localGroup.Size = UDim2.new(0, 640, 0, 200) 
 localGroup.Position = UDim2.new(0, 0, 0, 170)
-localGroup.Visible = true
+localGroup.Visible = true  -- Show local group by default
 localGroup.BackgroundTransparency = 1
 
 -- Noclip Button
@@ -98,14 +92,14 @@ fullbrightBtn.Font = Enum.Font.GothamBold
 fullbrightBtn.TextScaled = true
 Instance.new("UICorner", fullbrightBtn).CornerRadius = UDim.new(0, 8)
 
--- ESP Group
+-- ESP Group (Initially hidden)
 local espGroup = Instance.new("Frame", frame)
 espGroup.Size = UDim2.new(0, 640, 0, 200)
 espGroup.Position = UDim2.new(0, 0, 0, 170)
-espGroup.Visible = false
+espGroup.Visible = false  -- Hide ESP group initially
 espGroup.BackgroundTransparency = 1
 
--- ESP Buttons
+-- ESP Buttons (Inside ESP group)
 local mobsESPBtn = makeButton("Mobs ESP", 30, 200, 30)  
 local itemsESPBtn = makeButton("Items ESP", 160, 200, 30)  
 local playersESPBtn = makeButton("Player ESP", 290, 200, 30)  
@@ -121,8 +115,18 @@ closeButton.Font = Enum.Font.GothamBold
 closeButton.TextScaled = true
 Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0, 8)
 
--- ESP Logic for Mobs and Items (from external script)
+-- Function to toggle visibility between Local and ESP groups
+local function toggleVisibility(showLocal)
+    if showLocal then
+        localGroup.Visible = true
+        espGroup.Visible = false
+    else
+        localGroup.Visible = false
+        espGroup.Visible = true
+    end
+end
 
+-- ESP Logic for Mobs, Items, and Players
 local function createESP(model, labelText)
     if not model:FindFirstChild("Head") then return end
     if model.Head:FindFirstChild("_ESPTag") then return end
@@ -173,7 +177,7 @@ itemsESPBtn.MouseButton1Click:Connect(function()
     itemsESPBtn.BackgroundColor3 = itemsESPBtn.BackgroundColor3 == Color3.fromRGB(0, 255, 0) and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(0, 255, 0)
 end)
 
--- Player ESP (based on the original external script logic)
+-- Player ESP
 playersESPBtn.MouseButton1Click:Connect(function()
     clearESP()
     for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
@@ -184,87 +188,16 @@ playersESPBtn.MouseButton1Click:Connect(function()
     playersESPBtn.BackgroundColor3 = playersESPBtn.BackgroundColor3 == Color3.fromRGB(0, 255, 0) and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(0, 255, 0)
 end)
 
--- Noclip Logic with Landing
-local function toggleNoclip(state)
-    noclipActive = state
-    noclipBtn.Text = "Noclip: " .. (state and "ON" or "OFF")
-    noclipBtn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-end
-
-rs.Stepped:Connect(function()
-    if noclipActive and p.Character then
-        for _, part in pairs(p.Character:GetDescendants()) do
-            if part:IsA("BasePart") and part.CanCollide then
-                part.CanCollide = false
-            end
-        end
-    end
+-- Button logic for toggling groups
+localButton.MouseButton1Click:Connect(function()
+    toggleVisibility(true)  -- Show Local group and hide ESP group
 end)
 
--- Fullbright Logic
-local function toggleFullbright(state)
-    fullbrightActive = state
-    fullbrightBtn.Text = "Fullbright: " .. (state and "ON" or "OFF")
-    fullbrightBtn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-
-    if state then
-        game.Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        game.Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-    else
-        game.Lighting.Ambient = Color3.fromRGB(128, 128, 128)
-        game.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-    end
-end
-
--- Button logic
-noclipBtn.MouseButton1Click:Connect(function()
-    toggleNoclip(not noclipActive)
-end)
-
-fullbrightBtn.MouseButton1Click:Connect(function()
-    toggleFullbright(not fullbrightActive)
+espButton.MouseButton1Click:Connect(function()
+    toggleVisibility(false) -- Show ESP group and hide Local group
 end)
 
 -- Close Button Logic
 closeButton.MouseButton1Click:Connect(function()
     gui:Destroy()
-end)
-
--- Tab switching logic
-localButton.MouseButton1Click:Connect(function()
-    -- Show Local Tab and hide ESP Tab
-    localGroup.Visible = true
-    espGroup.Visible = false
-end)
-
-espButton.MouseButton1Click:Connect(function()
-    -- Show ESP Tab and hide Local Tab
-    espGroup.Visible = true
-    localGroup.Visible = false
-end)
-
--- Make GUI draggable
-local dragging = false
-local dragStart = Vector3.zero
-local startPos = frame.Position
-
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-    end
-end)
-
-frame.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-frame.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
 end)
